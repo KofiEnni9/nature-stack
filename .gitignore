@@ -17,6 +17,7 @@ eigen-3.4.0
 include/pcl
 include/pcl-install
 include/pcl-build
+pcl/
 pcl-install
 src/Diameter_Proj/by_me
 
