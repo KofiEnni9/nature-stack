@@ -8,45 +8,10 @@
 
 int main()
 {
-    // ---- Generate synthetic points on a known cylinder ----
-    // Cylinder parameters:
-    //   Axis direction: (0, 0, 1)  (along Z)
-    //   Center point:   (3, 5, 0)
-    //   Radius:         2.0
-    //   Height range:   0 to 10
-
-    // const float knownRadius = 2.0f;
-    // const glm::vec3 knownCenter(3.0f, 5.0f, 0.0f);
-    // const glm::vec3 knownAxis(0.0f, 0.0f, 1.0f);
-
-    // const int numRings = 20;
-    // const int pointsPerRing = 30;
-    // const int n = numRings * pointsPerRing;
-    // glm::vec3 points[n];
-
-    // srand(42);
-
-    // int idx = 0;
-    // for (int ring = 0; ring < numRings; ++ring)
-    // {
-    //     float z = 10.0f * ring / (numRings - 1);  // height along axis
-    //     for (int p = 0; p < pointsPerRing; ++p)
-    //     {
-    //         float theta = 2.0f * M_PI * p / pointsPerRing;
-    //         // Add a little noise to make it realistic
-    //         float noise = ((rand() % 1000) / 1000.0f - 0.5f) * 0.1f;
-    //         float r = knownRadius + noise;
-    //         points[idx] = glm::vec3(
-    //             knownCenter.x + r * cos(theta),
-    //             knownCenter.y + r * sin(theta),
-    //             z
-    //         );
-    //         idx++;
-    //     }
-    // }
 
 
-
+// input pcd = "/scratch/ld212/bag_files/backyard/pointclouds/1680633522931820011.pcd"
+// output pcd = "/scratch/ld212/bag_files/backyard/pointclouds/result_output.pcd"
 
 
 
@@ -107,3 +72,8 @@ int main()
 
     return 0;
 }
+
+
+
+// running this program
+// g++ src/Diameter_Proj/diam_proj.cpp -I /scratch/ld212/bag_files/nature-stack/include -o diam_proj

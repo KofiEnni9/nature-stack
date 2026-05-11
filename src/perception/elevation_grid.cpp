@@ -1,6 +1,8 @@
 #include "nature/perception/elevation_grid.h"
 #include <iostream>
 #include <math.h>
+#include "nature/perception/minimal_pointcloud.h"
+
 
 namespace nature{
 namespace perception{
@@ -56,6 +58,7 @@ void ElevationGrid::ClearGrid(){
 
 std::vector<nature::msg::Point32> ElevationGrid::AddPoints(nature::msg::PointCloud &point_cloud){
 
+
   bool has_segmentation_local = !point_cloud.channels.empty() && point_cloud.channels[0].name == "segmentation";
   has_segmentation_ = has_segmentation_local || has_segmentation_;
 
@@ -107,8 +110,9 @@ std::vector<nature::msg::Point32> ElevationGrid::AddPoints(nature::msg::PointClo
     for (int j=0; j<ny_; j++){
       if (cells_[i][j].filled){
         cells_[i][j].height = cells_[i][j].high - cells_[i][j].low;
-        //if (cells_[i][j].height/res_ > thresh_) cells_[i][j].obstacle = true;
+        // if (cells_[i][j].slope > thresh_) cells_[i][j].obstacle = true;
         cells_[i][j].slope = cells_[i][j].height/res_;
+        if (cells_[i][j].slope > thresh_) cells_[i][j].obstacle = true;
         if(!cells_[i][j].has_dilated && cells_[i][j].slope > thresh_){
           cells_[i][j].has_dilated = true;
           cells_to_dilate_x.push_back(i);
@@ -152,6 +156,8 @@ std::vector<nature::msg::Point32> ElevationGrid::AddPoints(nature::msg::PointClo
   std::vector<nature::msg::Point32> points;
   std::vector<nature::msg::Point32> surface_points;
   float hscale = 0.2f;
+
+  std::cout<<"points" << point_cloud.points.size() << std::endl;
   for (int i=0;i<point_cloud.points.size();i++){
     if (!(point_cloud.points[i].x==0.0 && point_cloud.points[i].y==0.0)){
       int xi = (int)floor((point_cloud.points[i].x - llx_)/res_);
@@ -172,6 +178,9 @@ std::vector<nature::msg::Point32> ElevationGrid::AddPoints(nature::msg::PointClo
       }
     }
   }
+  std::cout<<"points " << point_cloud.points.size() << std::endl;
+  std::cout<<"surface_points " << surface_points.size() << std::endl;
+
   point_cloud.points = points;
   return surface_points;
 } // method AddPoints

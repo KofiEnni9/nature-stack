@@ -13,7 +13,11 @@
 #include <vector>
 #include <limits>
 #include <string>
-#include "nature/node/ros_types.h"
+// #include "nature/node/ros_types.h"
+#include "minimal_pointcloud.h"
+// #include "nature/nature_utils.h"
+
+
 
 namespace nature{
 namespace perception{

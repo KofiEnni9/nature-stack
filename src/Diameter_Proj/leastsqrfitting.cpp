@@ -1,5 +1,6 @@
 #include "nature/thirdparty/glm/glm.hpp"
 #include <vector>
+#include <Eigen/Dense>
 
 using mat3x3 = glm::mat3x3;
 // using mat3x6 = glm::mat<3,6,float>;
@@ -76,9 +77,10 @@ struct mat6x6
 
 mat3x6 outerProduct(const glm::vec3& a, const vec6& b) {
     mat3x6 m;
+    for(int row=0; row<3; row++)
     for(int col=0; col<6; col++)
-        for(int row=0; row<3; row++)
-            m[col][row] = a[row] * b[col];
+        
+            m[row][col] = a[row] * b[col];
 
     return m;
 }
@@ -223,35 +225,41 @@ float FitCylinder (int n, glm::vec3 points[], float& rSqr, glm::vec3& C, glm::ve
     const int jmax = 64;
     const int imax = 64;
 
-    float minError = INFINITY;
-    W = glm::vec3(0, 0, 0);
-    C = glm::vec3(0, 0, 0);
-    rSqr = 0;
-    for(int j = 0; j <= jmax; ++j)
-    {
-        float phi = halfPi * j/jmax;
-        float csphi = cos(phi), snphi = sin(phi);
-        for (int i = 0; i < imax; ++i)
-        {
-            float theta = twoPi * i/imax;
-            float cstheta = cos(theta), sntheta = sin(theta);
-            glm::vec3 currentW(cstheta * snphi, sntheta * snphi, csphi); 
-            glm::vec3 currentC;
-            float currentRSqr;
-            float error = G(n, X, mu, F0, F1, F2, currentW, currentC, currentRSqr);
-            if(error < minError)
-            {
-                minError = error;
-                W = currentW;
-                C = currentC;
-                rSqr = currentRSqr;
-            }
-        }
-    }
+    W = glm::vec3(0.0f, 0.0f, 1.0f);
+    glm::vec3 currentC;
+    float currentRSqr;
+    float minError = G(n, X, mu, F0, F1, F2, W, currentC, currentRSqr);
+    C = currentC + average;
+    rSqr = currentRSqr;
 
-    C += average;
+    // float minError = INFINITY;
+    // W = glm::vec3(0, 0, 0);
+    // C = glm::vec3(0, 0, 0);
+    // rSqr = 0;
+    // for(int j = 0; j <= jmax; ++j)
+    // {
+    //     float phi = halfPi * j/jmax;
+    //     float csphi = cos(phi), snphi = sin(phi);
+    //     for (int i = 0; i < imax; ++i)
+    //     {
+    //         float theta = twoPi * i/imax;
+    //         float cstheta = cos(theta), sntheta = sin(theta);
+    //         glm::vec3 currentW(cstheta * snphi, sntheta * snphi, csphi); 
+    //         glm::vec3 currentC;
+    //         float currentRSqr;
+    //         float error = G(n, X, mu, F0, F1, F2, currentW, currentC, currentRSqr);
+    //         if(error < minError)
+    //         {
+    //             minError = error;
+    //             W = currentW;
+    //             C = currentC;
+    //             rSqr = currentRSqr;
+    //         }
+    //     }
+    // }
+
+    // C += average;
 
     return minError;
 
 }
-

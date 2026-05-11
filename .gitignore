@@ -12,3 +12,15 @@ cmake-build-debug
 *mavs_config.txt*
 CMakeLists.txt
 package.xml
+
+eigen-3.4.0
+include/pcl
+include/pcl-install
+include/pcl-build
+pcl-install
+src/Diameter_Proj/by_me
+
+vtk/
+vtk-install/
+flann/
+flann-install/
