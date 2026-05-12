@@ -14,7 +14,7 @@
 #include <chrono>
 #include "nature/perception/minimal_pointcloud.h"
 #include "nature/perception/elevation_grid.h"
-#include "ransac.h"
+#include "ransac.cpp"
 #include "leastsqrfitting.cpp"
 
 using namespace std;
@@ -46,8 +46,8 @@ int main()
     cout << "Loading PCD file..." << endl;
     TICK(load);
     pcl::PCLPointCloud2::Ptr cloud_blob (new pcl::PCLPointCloud2);
-    // pcl::io::loadPCDFile ("/home/kae257/pcdstuff/16point.pcd", *cloud_blob);
-    pcl::io::loadPCDFile ("/home/kae257/pcdstuff/point000.pcd", *cloud_blob);
+    pcl::io::loadPCDFile ("/home/kae257/pcdstuff/16point.pcd", *cloud_blob);
+    // pcl::io::loadPCDFile ("/home/kae257/pcdstuff/point000.pcd", *cloud_blob);
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_xyz (new pcl::PointCloud<pcl::PointXYZ>);
     pcl::fromPCLPointCloud2 (*cloud_blob, *cloud_xyz);
     TOCK(load);
@@ -114,7 +114,7 @@ int main()
     float store_Diameter[len];
 
     for (int i = 0; i < len; i++) {
-        auto cluster = output_clustering[i];
+        auto& cluster = output_clustering[i];
         // std::cout << "Cluster " << i << " has " << cluster->points.size() << " points." << std::endl;
         // auto& pts = cluster;
         // pts->points.erase(std::remove_if(pts->points.begin(), pts->points.end(), [&](const pcl::PointXYZ& p) {
@@ -127,8 +127,8 @@ int main()
 
         int pointCount = cluster->points.size();
         glm::vec3* points = (glm::vec3*)malloc(pointCount * sizeof(glm::vec3));
-        for(int i = 0; i < pointCount; ++i) {
-            points[i] = glm::vec3(cluster->points[i].x, cluster->points[i].y, cluster->points[i].z);
+        for(int j = 0; j < pointCount; ++j) {
+            points[j] = glm::vec3(cluster->points[j].x, cluster->points[j].y, cluster->points[j].z);
         }
 
         // ---- Run the cylinder fitting ----
@@ -141,20 +141,18 @@ int main()
         // height 2.5 - 6.5 
         // fit cylinder 
         float error = FitCylinder(pointCount, points, rSqr, C, W);
-        printf("\n=== Fitted Cylinder ===\n");
-        printf("  Axis:   (%.3f, %.3f, %.3f)\n", W.x, W.y, W.z);
-        printf("  Center: (%.3f, %.3f, %.3f)\n", C.x, C.y, C.z);
-        printf("  Radius: %.3f  Diameter: %.3f meters\n", sqrt(rSqr), 2 * sqrt(rSqr));
-        printf("  Error:  %e\n", error);
+        // printf("\n=== Fitted Cylinder ===\n");
+        // printf("  Axis:   (%.3f, %.3f, %.3f)\n", W.x, W.y, W.z);
+        // printf("  Center: (%.3f, %.3f, %.3f)\n", C.x, C.y, C.z);
+        // printf("  Radius: %.3f  Diameter: %.3f meters\n", sqrt(rSqr), 2 * sqrt(rSqr));
+        // printf("  Error:  %e\n", error);
         store_Diameter[i] = 2 * sqrt(rSqr);
 
-        // for (auto& cluster : output_clustering) {
-        //     cluster = Ransac_tree_trunks(cluster);
-        // }
+        cluster = Ransac_tree_trunks(cluster, 1000, 0.01f);
     }
 
 
     pcl::PointCloud<pcl::PointXYZRGBL>::Ptr outputcloud = make_colored_pcd_label(output_clustering, store_Diameter);
-    pcl::io::savePCDFile ("/home/kae257/pcdstuff/output2.pcd", *outputcloud);
+    pcl::io::savePCDFile ("/home/kae257/pcdstuff/outputstatic.pcd", *outputcloud);
     return 0;
 }

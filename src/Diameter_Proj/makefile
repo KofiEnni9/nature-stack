@@ -19,7 +19,7 @@ LIBS = \
 
 DEFINES = -DEIGEN_MAX_ALIGN_BYTES=32
 
-SRCS = kdTree.cpp euclidean_cluster.cpp ransac.cpp main.cpp ../perception/elevation_grid.cpp
+SRCS = kdTree.cpp euclidean_cluster.cpp main.cpp ../perception/elevation_grid.cpp
 
 TARGET = outputpcd
 
