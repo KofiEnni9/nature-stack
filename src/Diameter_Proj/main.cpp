@@ -23,31 +23,13 @@ using clk = std::chrono::high_resolution_clock;
 #define TOCK(x) cout << #x ": " << std::chrono::duration_cast<std::chrono::milliseconds>(clk::now()-_t_##x).count() << " ms\n"
 
 
-// Elevation Difference Filtering. It's one of the simplest LiDAR ground removal techniques.
-
-// void elevation_diff_filt(){
-//     int res = 0.4;
-
-//     auto cell = [&](float v) { return (int)std::floor(v / res); };
-
-//     for(int i = 0; i < cloud_xyz->points.size(); ++i) {
-//         const auto& pt = cloud_xyz->points[i];
-//         int cell_x = cell(pt.x);
-//         int cell_y = cell(pt.y);
-//         int cell_z = cell(pt.z);
-//         // Do something with the cell indices
-//     }
-// }
-
-
-
 int main()
 {
     cout << "Loading PCD file..." << endl;
     TICK(load);
     pcl::PCLPointCloud2::Ptr cloud_blob (new pcl::PCLPointCloud2);
-    pcl::io::loadPCDFile ("/home/kae257/pcdstuff/16point.pcd", *cloud_blob);
-    // pcl::io::loadPCDFile ("/home/kae257/pcdstuff/point000.pcd", *cloud_blob);
+    // pcl::io::loadPCDFile ("/home/kae257/pcdstuff/16point.pcd", *cloud_blob);
+    pcl::io::loadPCDFile ("/scratch/ld212/Tree_Diameter_Data/Data_Collection/BackyardDataCollection7_6_23WarthogStationary/2023-07-06-09-19-04.bag/088.pcd", *cloud_blob);
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_xyz (new pcl::PointCloud<pcl::PointXYZ>);
     pcl::fromPCLPointCloud2 (*cloud_blob, *cloud_xyz);
     TOCK(load);
@@ -92,10 +74,10 @@ int main()
 
     float veg_cutoff = 2.7432; // breast height limit points 9 feet
     // float vas[2] = {0.9144, 1.8288};  // 3ft - 6ft
-    float vas[2] = {1.0668, 1.6764};  // 3.5ft - 5.5ft
+    // float vas[2] = {1.0668, 1.6764};  // 3.5ft - 5.5ft
     // float vas[2] = {1.0668, 1.3716};
     // float vas[2] = {1.3716, 1.6764};
-    // float vas[2] = {1.2192, 1.524};
+    float vas[2] = {1.2192, 1.524};
 
     float min_z_thresh = min_z + vas[0];
     float max_z_thresh = min_z + vas[1];
@@ -108,6 +90,7 @@ int main()
 
     cout << "About to start clustering..." << endl;
     EuclideanCluster euc_clust;
+    // std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> output_clustering = euc_clust.euclideanclusterinf(0.05, cloud_xyz);
     std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> output_clustering = euc_clust.euclideanclusterinf(0.1, cloud_xyz);
     cout << "Clustering completed." << endl;
     int len = output_clustering.size();
@@ -148,11 +131,11 @@ int main()
         // printf("  Error:  %e\n", error);
         store_Diameter[i] = 2 * sqrt(rSqr);
 
-        cluster = Ransac_tree_trunks(cluster, 1000, 0.01f);
+        cluster = Ransac_tree_trunks(cluster, 1000, 0.001f);
     }
 
 
     pcl::PointCloud<pcl::PointXYZRGBL>::Ptr outputcloud = make_colored_pcd_label(output_clustering, store_Diameter);
-    pcl::io::savePCDFile ("/home/kae257/pcdstuff/outputstatic.pcd", *outputcloud);
+    pcl::io::savePCDFile ("/home/kae257/pcdstuff/output2.pcd", *outputcloud);
     return 0;
 }

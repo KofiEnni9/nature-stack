@@ -19,7 +19,7 @@ include/pcl-install
 include/pcl-build
 pcl/
 pcl-install
-src/Diameter_Proj/by_me
+# src/Diameter_Proj/by_me
 
 vtk/
 vtk-install/
